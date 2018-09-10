@@ -121,18 +121,17 @@ class News extends Component {
                                         <Text style={{fontWeight: '700', fontSize: 24}}>{item.title}</Text>
                                     </TouchableOpacity>
                                     :
-                                    <View key={index} style={style.news}>
+                                    <TouchableOpacity
+                                        key={index} style={style.news}
+                                        onPress={() => this.props.navigation.navigate('Detail', {item: item})}
+                                    >
                                         <Image source={{uri: item.urlToImage}} style={style.img_news}/>
                                         <View style={style.content}>
-                                            <TouchableOpacity
-                                                onPress={() => this.props.navigation.navigate('Detail', {item: item})}
-                                            >
-                                                <Text style={{fontWeight: '700'}}>{item.title}</Text>
-                                            </TouchableOpacity>
-                                            <Text style={style.txt_content}>{item.publishedAt} by {item.author}</Text>
-                                            <Text style={style.desc} numberOfLines={1}>{item.description}</Text>
+                                            <Text style={{fontWeight: '700'}} numberOfLines={2}>{item.title}</Text>
+                                            <Text style={style.txt_content} numberOfLines={1}>{item.publishedAt} by {item.author}</Text>
+                                            <Text style={style.desc} numberOfLines={2}>{item.description}</Text>
                                         </View>
-                                    </View>
+                                    </TouchableOpacity>
                             )}
                             renderSectionHeader={({section: {title}}) => (
                                 <Text style={style.title}>{title}</Text>
@@ -210,7 +209,9 @@ const style = StyleSheet.create({
         flex: 7,
         marginLeft: 10
     },
-    desc: {},
+    desc: {
+        marginTop: 10
+    },
     search: {
         borderLeftWidth: 1,
         borderRightWidth: 1,
