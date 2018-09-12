@@ -12,10 +12,12 @@ import {
     RefreshControl,
     ActivityIndicator,
     Platform,
-    TextInput
+    TextInput,
+    ImageBackground
 } from 'react-native'
 import {LOGO_URL} from "../config/const";
 import {API, apiKey} from "../config/Api";
+import Carousel, {Pagination} from 'react-native-snap-carousel';
 
 const {width, height} = Dimensions.get('window')
 
@@ -28,6 +30,7 @@ class News extends Component {
             refresh: false,
             begin: true,
             value_search: '',
+            activeSlide: 0
         }
     }
 
@@ -49,14 +52,33 @@ class News extends Component {
         }
     }
 
+    get pagination() {
+        return (
+            <Pagination
+                dotsLength={this.props.dataRecent.length}
+                activeDotIndex={this.state.activeSlide}
+                containerStyle={{ backgroundColor: 'rgba(0, 0, 0, 1)' }}
+                dotStyle={{
+                    width: 5,
+                    height: 5,
+                    borderRadius: 5,
+                    marginHorizontal: 1,
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)'
+                }}
+                inactiveDotStyle={{
+                    // Define styles for inactive dots here
+                }}
+                inactiveDotOpacity={0.4}
+                inactiveDotScale={0.6}
+                tappableDots={true}
+            />
+        )
+    }
+
     componentDidMount() {
         setTimeout(() => {
             this.setState({begin: false})
         }, 2000)
-        //
-        // if (!this.state.begin) {
-        //     this.props.onFetchNews(API.ALL_CRYPTO_COIN_NEWS_API, apiKey, 6, 1)
-        // }
         if(this.onEndReachedCalledDuringMomentum){
             this.props.onFetchNews(API.ALL_CRYPTO_COIN_NEWS_API, apiKey, 6, 1)
             this.onEndReachedCalledDuringMomentum = true;
@@ -68,7 +90,6 @@ class News extends Component {
         const {dataRecent, page, pageSize, onFetchNews, loading} = this.props
         const _API = API.ALL_CRYPTO_COIN_NEWS_API
         this.dataRecent = dataRecent
-        console.log(pageSize)
 
         return <View style={style.container}>
             {
@@ -108,21 +129,22 @@ class News extends Component {
                                 index === 0 ?
                                     <TouchableOpacity
                                         style={{
+                                            flex: 1,
                                             paddingBottom: 10,
                                             marginBottom: 20,
                                             backgroundColor: '#e1effd',
                                             justifyContent: 'center',
-                                            alignItems: Platform.OS === 'ios' ? '' : 'center'
                                         }}
                                         onPress={() => this.props.navigation.navigate('Detail', {item: item})}
                                     >
                                         <Image source={{uri: item.urlToImage}} style={style.img0}/>
                                         <Text style={style.txt10}>{item.author}</Text>
-                                        <Text style={{fontWeight: '700', fontSize: 24}}>{item.title}</Text>
+                                        <Text style={{fontWeight: '700', fontSize: 24, margin: 5}}>{item.title}</Text>
                                     </TouchableOpacity>
                                     :
                                     <TouchableOpacity
-                                        key={index} style={style.news}
+                                        key={index}
+                                        style={style.news}
                                         onPress={() => this.props.navigation.navigate('Detail', {item: item})}
                                     >
                                         <Image source={{uri: item.urlToImage}} style={style.img_news}/>
@@ -143,7 +165,7 @@ class News extends Component {
                             onEndReachedThreshold={0.5}
                             onEndReached={() => {
                                 if(!this.onEndReachedCalledDuringMomentum){
-                                    onFetchNews(_API, apiKey, pageSize, page), console.log('on end reach')
+                                    onFetchNews(_API, apiKey, pageSize, page)
                                     this.onEndReachedCalledDuringMomentum = true;
                                 }
                             }}
@@ -174,7 +196,10 @@ const style = StyleSheet.create({
         backgroundColor: '#ffffff'
     },
     img0: {
-        width: width / 1.09, height: height / 4
+        width: width, height: height / 4
+    },
+    imgCarousel:{
+        width: width, height: height / 3, borderRadius: 10
     },
     img: {
         width: 60,
@@ -187,7 +212,10 @@ const style = StyleSheet.create({
         fontWeight: 'bold', color: '#e41700', fontSize: 20, marginTop: 20, marginBottom: 10
     },
     txt10: {
-        marginBottom: 10
+        margin: 5,
+        fontStyle: 'italic',
+        fontSize: 12,
+        color: '#4d4d4d'
     },
     txt_content: {
         marginTop: 10,
@@ -220,6 +248,12 @@ const style = StyleSheet.create({
         borderRadius: 5,
         borderColor: '#4d4d4d',
         padding: 10
+    },
+    carousel: {
+        width: width,
+        height: '100%',
+        borderWidth: 5,
+        borderRadius: 5
     }
 })
 export default News;
